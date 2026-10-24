@@ -163,7 +163,10 @@ function Dashboard() {
 
   // Debounced sync prevents every node drag from producing a database write.
   useEffect(() => {
-    if (!cloudEnabled || !user || !supabase || !cloudReady) return;
+    // Capture the client in a local constant so TypeScript can retain the null check
+    // inside the debounced callback.
+    const client = supabase;
+    if (!cloudEnabled || !user || !client || !cloudReady) return;
     if (!workspaces.length) return;
     const timeout = window.setTimeout(() => {
       const rows = workspaces.map((workspace) => ({
@@ -173,7 +176,7 @@ function Dashboard() {
         map_data: { schemaVersion: 1, nodes: workspace.nodes, edges: workspace.edges, sourceDocument: workspace.sourceDocument ?? '' },
         updated_at: workspace.updatedAt || new Date().toISOString(),
       }));
-      void supabase.from('study_maps').upsert(rows, { onConflict: 'user_id,id' }).then(({ error }) => {
+      void client.from('study_maps').upsert(rows, { onConflict: 'user_id,id' }).then(({ error }) => {
         if (error) setToast(`No se pudo sincronizar con la nube: ${error.message}`);
       });
     }, 900);
@@ -717,10 +720,11 @@ function SpacesDashboard({ workspaces, theme, themeOptions: themes, onThemeChang
               const colors = branches.slice(0, 5).map((branch) => branch.data.color);
               const updatedDate = new Date(workspace.updatedAt);
               const updatedLabel = Number.isNaN(updatedDate.getTime()) ? 'Reciente' : new Intl.DateTimeFormat('es', { day: 'numeric', month: 'short' }).format(updatedDate);
+              const sourceDocument = workspace.sourceDocument ?? '';
               return <article className={`space-card space-card-tone-${index % 4}`} key={workspace.id}>
                 <button className="space-card-open" onClick={() => onOpen(workspace)} aria-label={`Abrir ${workspace.title}`}>
                   <div className="space-card-art"><div className="space-card-art-grid"/><div className="space-card-map-preview"><span className="preview-root"/><i className="preview-line line-one"/><i className="preview-line line-two"/><i className="preview-line line-three"/><span className="preview-dot dot-one"/><span className="preview-dot dot-two"/><span className="preview-dot dot-three"/><span className="preview-dot dot-four"/><span className="preview-dot dot-five"/></div><span className="space-card-type"><Network size={12}/> MAPA MENTAL</span><span className="space-card-open-icon"><ArrowUpRight size={17}/></span></div>
-                  <div className="space-card-body"><div className="space-card-topline"><span className="space-card-tag"><span style={{ background: colors[0] ?? 'var(--theme-accent)' }}/>{branches.length ? `${branches.length} ${branches.length === 1 ? 'rama' : 'ramas'}` : 'En preparación'}</span><span className="space-card-updated"><Clock size={12}/>{updatedLabel}</span></div><h3>{workspace.title}</h3><p>{workspace.sourceDocument.trim() ? `${workspace.sourceDocument.trim().split(/\s+/).length.toLocaleString('es')} palabras de apuntes importados` : 'Un espacio de ideas para organizar y profundizar.'}</p><div className="space-card-progress"><div className="space-card-progress-label"><span>Progreso de conceptos</span><strong>{concepts.length ? Math.round(done / concepts.length * 100) : 0}%</strong></div><div className="space-card-progress-track"><span style={{ width: `${concepts.length ? done / concepts.length * 100 : 0}%` }}/></div></div><div className="space-card-footer"><span><Layers3 size={13}/>{workspace.nodes.length} nodos</span><span><CheckCircle2 size={13}/>{done}/{concepts.length} completados</span></div><div className="space-card-color-strip">{(colors.length ? colors : ['#a5b4c8', '#c3b4d6', '#aed3c0']).map((color, colorIndex) => <i key={`${color}-${colorIndex}`} style={{ background: color }}/>)}</div></div>
+                  <div className="space-card-body"><div className="space-card-topline"><span className="space-card-tag"><span style={{ background: colors[0] ?? 'var(--theme-accent)' }}/>{branches.length ? `${branches.length} ${branches.length === 1 ? 'rama' : 'ramas'}` : 'En preparación'}</span><span className="space-card-updated"><Clock size={12}/>{updatedLabel}</span></div><h3>{workspace.title}</h3><p>{sourceDocument.trim() ? `${sourceDocument.trim().split(/\s+/).length.toLocaleString('es')} palabras de apuntes importados` : 'Un espacio de ideas para organizar y profundizar.'}</p><div className="space-card-progress"><div className="space-card-progress-label"><span>Progreso de conceptos</span><strong>{concepts.length ? Math.round(done / concepts.length * 100) : 0}%</strong></div><div className="space-card-progress-track"><span style={{ width: `${concepts.length ? done / concepts.length * 100 : 0}%` }}/></div></div><div className="space-card-footer"><span><Layers3 size={13}/>{workspace.nodes.length} nodos</span><span><CheckCircle2 size={13}/>{done}/{concepts.length} completados</span></div><div className="space-card-color-strip">{(colors.length ? colors : ['#a5b4c8', '#c3b4d6', '#aed3c0']).map((color, colorIndex) => <i key={`${color}-${colorIndex}`} style={{ background: color }}/>)}</div></div>
                 </button>
                 <button className="space-card-delete" onClick={() => onDelete(workspace.id)} title={`Eliminar ${workspace.title}`} aria-label={`Eliminar ${workspace.title}`}><X size={14}/></button>
               </article>;
