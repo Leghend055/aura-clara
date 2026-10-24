@@ -1,0 +1,4 @@
+# Supabase CLI config for Aura Clara beta.
+# Leave verify_jwt enabled: only authenticated students may call the generator.
+[functions.generate-study-content]
+verify_jwt = true
