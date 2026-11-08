@@ -32,7 +32,23 @@ export async function generateAIExam(title: string, content: string): Promise<AI
   const { data, error } = await supabase.functions.invoke('generate-study-content', {
     body: { action: 'exam', title: title.trim().slice(0, 120), content: trimmed, sourceUrl: '' },
   });
-  if (error) throw new Error(error.message || 'La función de IA no respondió.');
+  if (error) {
+    // Supabase guarda el cuerpo JSON de los errores HTTP en error.context.
+    // Leerlo permite mostrar el mensaje real enviado por la Edge Function.
+    let detail = error.message || 'La función de IA no respondió.';
+    const response = (error as { context?: Response }).context;
+    if (response instanceof Response) {
+      try {
+        const payload = await response.clone().json();
+        if (typeof payload?.error === 'string' && payload.error.trim()) {
+          detail = payload.error;
+        }
+      } catch {
+        // Conserva el mensaje original si la respuesta no contiene JSON.
+      }
+    }
+    throw new Error(detail);
+  }
   if (!data || !Array.isArray(data.questions) || data.questions.length < 3) {
     throw new Error(data?.error || 'La IA no devolvió suficientes preguntas.');
   }

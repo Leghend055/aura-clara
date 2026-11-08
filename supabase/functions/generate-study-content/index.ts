@@ -63,6 +63,105 @@ function makeMap(title: string, content: string, sourceUrl: string, structured: 
   return { nodes, edges };
 }
 
+
+function normalizeEvidence(value: string) {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function parseQuestions(payload: any): any[] {
+  if (Array.isArray(payload)) return payload;
+  if (!payload || typeof payload !== 'object') return [];
+
+  const candidates = [
+    payload.questions,
+    payload.preguntas,
+    payload.exam?.questions,
+    payload.data?.questions,
+    payload.result?.questions,
+  ];
+
+  for (const candidate of candidates) {
+    if (Array.isArray(candidate)) return candidate;
+    if (typeof candidate === 'string') {
+      try {
+        const parsed = JSON.parse(candidate);
+        const nested = parseQuestions(parsed);
+        if (nested.length) return nested;
+      } catch {
+        // Ignora campos de texto que no contengan JSON válido.
+      }
+    }
+  }
+
+  return [];
+}
+
+function normalizeCorrectIndex(value: unknown): number | null {
+  if (Number.isInteger(value) && Number(value) >= 0 && Number(value) <= 3) {
+    return Number(value);
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim().toUpperCase();
+    if (/^[0-3]$/.test(trimmed)) return Number(trimmed);
+    if (/^[A-D]$/.test(trimmed)) return trimmed.charCodeAt(0) - 65;
+  }
+  return null;
+}
+
+function validateExamQuestions(payload: any, content: string) {
+  const rawQuestions = parseQuestions(payload);
+  const normalizedContent = normalizeEvidence(content);
+  const seen = new Set<string>();
+  const questions = rawQuestions.slice(0, 15).flatMap((q: any) => {
+    if (!q || typeof q !== 'object') return [];
+
+    const questionText = typeof q.question === 'string'
+      ? q.question.trim()
+      : typeof q.pregunta === 'string' ? q.pregunta.trim() : '';
+    const rawOptions = Array.isArray(q.options) ? q.options : q.opciones;
+    const options = Array.isArray(rawOptions)
+      ? rawOptions.map((option: unknown) => typeof option === 'string' ? option.trim() : '')
+      : [];
+    const correctIndex = normalizeCorrectIndex(q.correctIndex ?? q.correct_index ?? q.indiceCorrecto);
+    const sourceExcerpt = typeof q.sourceExcerpt === 'string'
+      ? q.sourceExcerpt.trim()
+      : typeof q.source_excerpt === 'string' ? q.source_excerpt.trim()
+      : typeof q.evidence === 'string' ? q.evidence.trim() : '';
+
+    if (!questionText || options.length !== 4 || options.some((option) => !option)) return [];
+    if (new Set(options.map(normalizeEvidence)).size !== 4 || correctIndex === null) return [];
+
+    const normalizedQuote = normalizeEvidence(sourceExcerpt);
+    if (normalizedQuote.length < 18 || !normalizedContent.includes(normalizedQuote)) return [];
+
+    const normalizedQuestion = normalizeEvidence(questionText);
+    if (seen.has(normalizedQuestion)) return [];
+    seen.add(normalizedQuestion);
+
+    const explanation = typeof q.explanation === 'string' && q.explanation.trim()
+      ? q.explanation.trim()
+      : typeof q.explicacion === 'string' && q.explicacion.trim()
+        ? q.explicacion.trim()
+        : 'Revisa el fragmento de apoyo y los apuntes originales para profundizar.';
+
+    return [{
+      question: questionText.slice(0, 700),
+      options: options.map((option) => option.slice(0, 250)),
+      correctIndex,
+      explanation: explanation.slice(0, 900),
+      sourceExcerpt: sourceExcerpt.slice(0, 500),
+    }];
+  });
+
+  return { questions: questions.slice(0, 10), received: rawQuestions.length };
+}
+
 async function callGroq(prompt: string, system: string) {
   const apiKey = Deno.env.get('GROQ_API_KEY');
   if (!apiKey) throw new Error('El servicio de IA no está configurado. Añade GROQ_API_KEY en los secretos de Supabase.');
@@ -112,17 +211,34 @@ Deno.serve(async (req) => {
     if (!allowed) return json({ error: 'Has alcanzado la cuota beta (10 generaciones o 60.000 caracteres al día por cuenta). Inténtalo mañana.' }, 429);
 
     if (action === 'exam') {
-      const system = 'Eres un asistente de estudio riguroso. Trabaja exclusivamente con el material suministrado. No inventes citas, fuentes ni datos no respaldados. Si el material no permite una pregunta fiable, no la incluyas. Devuelve únicamente JSON válido.';
-      const prompt = `Crea un examen en español para el tema "${title}" basado EXCLUSIVAMENTE en estos apuntes. Genera de 6 a 10 preguntas de opción múltiple, cada una con exactamente cuatro opciones plausibles, un índice correcto entre 0 y 3, una explicación breve y un fragmento de evidencia copiado literalmente de los apuntes. No preguntes información que no esté respaldada. JSON exacto: {"questions":[{"question":"...","options":["...","...","...","..."],"correctIndex":0,"explanation":"...","sourceExcerpt":"..."}]}. APUNTES:\n${content}`;
-      const exam = await callGroq(prompt, system);
-      if (!Array.isArray(exam.questions) || exam.questions.length < 3) return json({ error: 'No se pudieron crear suficientes preguntas a partir de este material.' }, 422);
-      const normalizedContent = content.toLocaleLowerCase().replace(/\s+/g, ' ').trim();
-      const questions = exam.questions.slice(0, 10).filter((q: any) => {
-        if (typeof q.question !== 'string' || !Array.isArray(q.options) || q.options.length !== 4 || !Number.isInteger(q.correctIndex) || q.correctIndex < 0 || q.correctIndex >= 4 || typeof q.sourceExcerpt !== 'string') return false;
-        const quote = q.sourceExcerpt.toLocaleLowerCase().replace(/\s+/g, ' ').trim();
-        return quote.length >= 18 && normalizedContent.includes(quote);
-      }).map((q: any) => ({ question: q.question.slice(0, 700), options: q.options.map((o: unknown) => safeString(o, 'Opción', 250)), correctIndex: q.correctIndex, explanation: safeString(q.explanation, 'Revisa los apuntes originales para profundizar.'), sourceExcerpt: safeString(q.sourceExcerpt, 'No se devolvió un fragmento verificable.', 500) }));
-      return json({ questions, model: MODEL });
+      const system = 'Eres un asistente de estudio riguroso. Trabaja exclusivamente con el material suministrado. No inventes citas, fuentes ni datos no respaldados. Devuelve únicamente un objeto JSON válido, sin Markdown ni texto adicional.';
+      const baseInstructions = `Crea un examen en español para el tema "${title}" usando EXCLUSIVAMENTE los apuntes incluidos al final. Genera 5 preguntas de opción múltiple. Es indispensable que haya al menos 3 preguntas válidas. Cada pregunta debe tener exactamente cuatro opciones distintas y plausibles, correctIndex como número entero de 0 a 3, una explicación breve y sourceExcerpt con una frase o fragmento CONTINUO copiado literalmente de los apuntes (mínimo 18 caracteres). No inventes información. No incluyas preguntas cuya respuesta no pueda justificarse con los apuntes. Devuelve exclusivamente este formato JSON: {"questions":[{"question":"Pregunta clara","options":["Opción A","Opción B","Opción C","Opción D"],"correctIndex":0,"explanation":"Explicación basada en los apuntes","sourceExcerpt":"Fragmento literal de los apuntes"}]}. No uses claves distintas, no escribas comentarios y no incluyas bloques de código.\n\nAPUNTES:\n${content}`;
+
+      let validated = { questions: [] as any[], received: 0 };
+      let lastError = '';
+
+      // Una segunda llamada corrige respuestas con una estructura incompleta o inválida.
+      for (let attempt = 0; attempt < 2; attempt++) {
+        const prompt = attempt === 0
+          ? baseInstructions
+          : `Tu respuesta anterior no cumplió el formato o no produjo tres preguntas verificables. Vuelve a generar el examen desde cero. Entrega 5 preguntas, nunca menos de 3. Respeta exactamente las claves y tipos del JSON solicitado. sourceExcerpt debe copiarse literalmente y de forma continua de los apuntes; no lo parafrasees.\n\n${baseInstructions}`;
+
+        const exam = await callGroq(prompt, system);
+        validated = validateExamQuestions(exam, content);
+
+        if (validated.questions.length >= 3) {
+          return json({ questions: validated.questions, model: MODEL });
+        }
+
+        lastError = `Intento ${attempt + 1}: se recibieron ${validated.received} preguntas y ${validated.questions.length} superaron la validación.`;
+        console.warn('Exam generation validation:', lastError);
+      }
+
+      return json({
+        error: 'La IA no pudo crear al menos tres preguntas válidas con evidencia verificable. Prueba con apuntes más completos o divide el material en fragmentos.',
+        received: validated.received,
+        valid: validated.questions.length,
+      }, 422);
     }
 
     const system = 'Eres un tutor académico. Debes organizar y explicar exclusivamente la información que esté respaldada por el material dado. No añadas bibliografía externa ni afirmaciones médicas externas. Si los apuntes son ambiguos, deja constancia de ello. Devuelve únicamente JSON válido.';
