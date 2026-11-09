@@ -1347,3 +1347,283 @@ a { color: inherit; }
   .app-shell-map-view .mobile-tool-button { gap: 3px; padding: 0 5px; font-size: 9px; }
   .app-shell-map-view .mobile-canvas-zoom button { min-width: 33px; }
 }
+
+
+/* Aura Clara — temas extendidos (desktop y móvil) */
+.theme-picker-popover { max-height: min(68vh, 560px); overflow-y: auto; overscroll-behavior: contain; }
+.spaces-theme-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(126px, 1fr)); flex: 1; }
+.spaces-theme-option { min-width: 0; }
+
+.app-shell[data-theme="papel"] {
+  --theme-page: #f3eddf; --theme-header: rgba(250, 245, 234, .97); --theme-surface: #fffaf0;
+  --theme-canvas: #f8f2e6; --theme-border: #e5d9c4; --theme-accent: #9a714b;
+  --theme-accent-dark: #795637; --theme-accent-soft: #eee2cd; --theme-ink: #514333;
+  --theme-ink-strong: #3e3024; --theme-muted: #978875; --theme-dots: #dfd2bd; --theme-on-accent: #fffaf2;
+}
+.app-shell[data-theme="obsidiana"] {
+  color-scheme: dark; --theme-page: #0b0d13; --theme-header: rgba(19, 20, 30, .97); --theme-surface: #191b27;
+  --theme-canvas: #11131d; --theme-border: #303344; --theme-accent: #b39aff;
+  --theme-accent-dark: #9579e8; --theme-accent-soft: #2b2541; --theme-ink: #d9dbea;
+  --theme-ink-strong: #f4f2ff; --theme-muted: #9b9eb4; --theme-dots: #343247; --theme-on-accent: #171323;
+}
+.app-shell[data-theme="grafito"] {
+  color-scheme: dark; --theme-page: #17191d; --theme-header: rgba(34, 37, 43, .97); --theme-surface: #252930;
+  --theme-canvas: #1d2026; --theme-border: #3d434d; --theme-accent: #bcc6d2;
+  --theme-accent-dark: #d4dce5; --theme-accent-soft: #363d47; --theme-ink: #e0e4e9;
+  --theme-ink-strong: #f5f7f9; --theme-muted: #a4adb8; --theme-dots: #3c424c; --theme-on-accent: #20242a;
+}
+.app-shell[data-theme="aurora"] {
+  color-scheme: dark; --theme-page: radial-gradient(ellipse at 15% 0%, #302052 0%, transparent 46%), linear-gradient(145deg, #111326, #101d31 58%, #15293a);
+  --theme-header: linear-gradient(100deg, rgba(31, 23, 55, .98), rgba(18, 35, 55, .98)); --theme-surface: #1d2036;
+  --theme-canvas: #151a2c; --theme-border: #3b3b5c; --theme-accent: #79d8eb;
+  --theme-accent-dark: #a1a1ff; --theme-accent-soft: #26334c; --theme-ink: #e0e6f5;
+  --theme-ink-strong: #f8f8ff; --theme-muted: #a3aac6; --theme-dots: #3a3c5b; --theme-on-accent: #10202e;
+}
+.app-shell[data-theme="medianoche"] {
+  color-scheme: dark; --theme-page: #0d1729; --theme-header: rgba(18, 31, 53, .98); --theme-surface: #192942;
+  --theme-canvas: #111f34; --theme-border: #2c405c; --theme-accent: #83bdff;
+  --theme-accent-dark: #5d9fe9; --theme-accent-soft: #203b5a; --theme-ink: #dce8f7;
+  --theme-ink-strong: #f1f7ff; --theme-muted: #9aadc4; --theme-dots: #30425a; --theme-on-accent: #10243c;
+}
+.app-shell[data-theme="boceto"] {
+  --theme-page: #f4efdf; --theme-header: rgba(250, 246, 233, .97); --theme-surface: #fffaf0;
+  --theme-canvas: #f8f3e6; --theme-border: #c9bea6; --theme-accent: #526653;
+  --theme-accent-dark: #3c5140; --theme-accent-soft: #e8e5d4; --theme-ink: #4b4a40;
+  --theme-ink-strong: #373b32; --theme-muted: #858170; --theme-dots: #d3c9b4; --theme-on-accent: #fffdf4;
+}
+
+/* Las superficies y el texto usan los mismos tokens en ambas distribuciones. */
+.app-shell[data-theme] .app-header,
+.app-shell[data-theme] .spaces-header { background: var(--theme-header); border-color: var(--theme-border); }
+.app-shell[data-theme] .workspace-heading-row,
+.app-shell[data-theme] .app-footer { color: var(--theme-muted); }
+.app-shell[data-theme] .global-search-wrap,
+.app-shell[data-theme] .header-zoom-group,
+.app-shell[data-theme] .canvas-topbar,
+.app-shell[data-theme] .canvas-bottom-meta,
+.app-shell[data-theme] .flow-legend-panel,
+.app-shell[data-theme] .canvas-helper-pill,
+.app-shell[data-theme] .react-flow__controls-button,
+.app-shell[data-theme] .review-card,
+.app-shell[data-theme] .review-option,
+.app-shell[data-theme] .source-document-card,
+.app-shell[data-theme] .reading-branch-card,
+.app-shell[data-theme] .source-library-card,
+.app-shell[data-theme] .sources-summary-strip > div,
+.app-shell[data-theme] .creator-modal,
+.app-shell[data-theme] .onboarding-dialog,
+.app-shell[data-theme] .stat-tile,
+.app-shell[data-theme] .explorer-bottom-card,
+.app-shell[data-theme] .spaces-search {
+  color: var(--theme-ink); background: var(--theme-surface); border-color: var(--theme-border);
+}
+.app-shell[data-theme] .canvas-topbar,
+.app-shell[data-theme] .canvas-bottom-meta { background: var(--theme-surface); }
+.app-shell[data-theme] .flow-canvas .react-flow__controls-button { fill: var(--theme-ink); border-bottom-color: var(--theme-border); }
+.app-shell[data-theme] .flow-canvas .react-flow__controls-button:hover { background: var(--theme-accent-soft); }
+.app-shell[data-theme] .flow-canvas .react-flow__minimap { background: var(--theme-surface); border-color: var(--theme-border); }
+.app-shell[data-theme] .flow-canvas .react-flow__minimap-mask { fill: var(--theme-minimap-mask, rgba(220,225,232,.56)); stroke: var(--theme-accent); }
+.app-shell[data-theme] .study-node { color: var(--theme-ink); background: var(--theme-surface); border-color: color-mix(in srgb, var(--node-color) 42%, var(--theme-border)); }
+.app-shell[data-theme] .study-node-root { background: linear-gradient(145deg, var(--theme-surface), var(--theme-canvas)); border-color: var(--theme-accent); }
+.app-shell[data-theme] .study-node-root .node-title,
+.app-shell[data-theme] .node-title,
+.app-shell[data-theme] .detail-title-row h2,
+.app-shell[data-theme] .canvas-topbar h2,
+.app-shell[data-theme] .panel-section-title h2,
+.app-shell[data-theme] .stat-tile strong,
+.app-shell[data-theme] .journey-card h3,
+.app-shell[data-theme] .explorer-list-header h3,
+.app-shell[data-theme] .reading-intro-card h3,
+.app-shell[data-theme] .reading-branch-header h3,
+.app-shell[data-theme] .source-document-header h3,
+.app-shell[data-theme] .review-card h3,
+.app-shell[data-theme] .empty-content-view h2,
+.app-shell[data-theme] .modal-heading-copy h2,
+.app-shell[data-theme] .field-label,
+.app-shell[data-theme] .spaces-tip strong { color: var(--theme-ink-strong); }
+.app-shell[data-theme] .study-node-root .node-kind,
+.app-shell[data-theme] .study-node-root .node-subtitle,
+.app-shell[data-theme] .node-footer,
+.app-shell[data-theme] .journey-card p,
+.app-shell[data-theme] .canvas-eyebrow,
+.app-shell[data-theme] .breadcrumb,
+.app-shell[data-theme] .workspace-status,
+.app-shell[data-theme] .reading-branch-card > p,
+.app-shell[data-theme] .review-card-meta,
+.app-shell[data-theme] .review-note,
+.app-shell[data-theme] .empty-content-view p,
+.app-shell[data-theme] .modal-heading-copy p { color: var(--theme-muted); }
+.app-shell[data-theme] .node-footer,
+.app-shell[data-theme] .reading-goals > div,
+.app-shell[data-theme] .reading-branch-card,
+.app-shell[data-theme] .review-footer,
+.app-shell[data-theme] .source-library-card,
+.app-shell[data-theme] .source-document-header,
+.app-shell[data-theme] .source-document-note { border-color: var(--theme-border); }
+.app-shell[data-theme] .reading-intro-card,
+.app-shell[data-theme] .reading-goals > div,
+.app-shell[data-theme] .reading-concept-row,
+.app-shell[data-theme] .review-option,
+.app-shell[data-theme] .review-progress-line,
+.app-shell[data-theme] .option-letter,
+.app-shell[data-theme] .source-document-header,
+.app-shell[data-theme] .source-document-note,
+.app-shell[data-theme] .source-library-index,
+.app-shell[data-theme] .sources-disclaimer,
+.app-shell[data-theme] .spaces-theme-option.active,
+.app-shell[data-theme] .space-card-tag { background: var(--theme-canvas); color: var(--theme-ink); border-color: var(--theme-border); }
+.app-shell[data-theme] .reading-concept-row strong,
+.app-shell[data-theme] .source-library-content h3,
+.app-shell[data-theme] .source-library-content p,
+.app-shell[data-theme] .source-library-content a,
+.app-shell[data-theme] .review-option { color: var(--theme-ink); }
+.app-shell[data-theme] .global-search-wrap input,
+.app-shell[data-theme] .spaces-search input,
+.app-shell[data-theme] .title-edit-form input,
+.app-shell[data-theme] .text-input,
+.app-shell[data-theme] .text-area,
+.app-shell[data-theme] .speed-select { color: var(--theme-ink); background: var(--theme-canvas); border-color: var(--theme-border); }
+.app-shell[data-theme] .quiet-button,
+.app-shell[data-theme] .secondary-button,
+.app-shell[data-theme] .icon-button,
+.app-shell[data-theme] .spaces-return-button,
+.app-shell[data-theme] .canvas-fit-button { color: var(--theme-ink); border-color: var(--theme-border); background: var(--theme-surface); }
+.app-shell[data-theme] .quiet-button:hover,
+.app-shell[data-theme] .secondary-button:hover,
+.app-shell[data-theme] .icon-button:hover,
+.app-shell[data-theme] .canvas-fit-button:hover { color: var(--theme-accent); background: var(--theme-accent-soft); }
+.app-shell[data-theme] .primary-button,
+.app-shell[data-theme] .journey-button { color: var(--theme-on-accent, #fff); }
+.app-shell[data-theme] .theme-picker-popover { max-height: min(68vh, 560px); overflow-y: auto; }
+
+/* Temas oscuros: tarjetas, paneles y mapa conservan contraste y profundidad. */
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .spaces-hero {
+  background: radial-gradient(ellipse at 83% 10%, color-mix(in srgb, var(--theme-accent) 24%, transparent), transparent 47%), linear-gradient(120deg, var(--theme-surface), var(--theme-canvas));
+  box-shadow: 0 15px 40px rgba(0,0,0,.17);
+}
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .space-card-art,
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .space-card-tone-1 .space-card-art,
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .space-card-tone-2 .space-card-art,
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .space-card-tone-3 .space-card-art { background: linear-gradient(135deg, var(--theme-accent-soft), var(--theme-canvas)); }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .space-card-open-icon { background: color-mix(in srgb, var(--theme-surface) 88%, transparent); border-color: var(--theme-border); }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .review-option:not(:disabled):hover,
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .reading-concept-row:hover { background: var(--theme-accent-soft); border-color: var(--theme-accent); }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .review-progress-line { background: var(--theme-border); }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .review-option .option-letter { background: var(--theme-accent-soft); color: var(--theme-accent); }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .review-feedback-correct { background: #1b3329; border-color: #315944; }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .review-feedback-wrong { background: #382528; border-color: #654044; }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .review-feedback p { color: #c1c8d1; }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .review-score { background: var(--theme-accent-soft); border-color: var(--theme-border); }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .review-score strong,
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .review-score span { color: var(--theme-accent); }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .saved-dot { box-shadow: 0 0 0 3px var(--theme-accent-soft); }
+
+/* Papel: un tono marfil más cálido, pensado para lectura prolongada. */
+.app-shell[data-theme="papel"] .spaces-hero { background: radial-gradient(ellipse at 82% 10%, #efe0c7, transparent 48%), linear-gradient(120deg, #fffaf0, #f8f1e4); }
+.app-shell[data-theme="papel"] .flow-canvas { background-image: linear-gradient(to bottom, transparent 27px, rgba(180,151,112,.12) 28px); background-size: 100% 28px; }
+.app-shell[data-theme="papel"] .study-node { box-shadow: 2px 3px 0 rgba(117,88,57,.08); }
+
+/* Boceto: líneas imperfectas, papel cuadriculado y sensación de cuaderno. */
+.app-shell[data-theme="boceto"] .spaces-hero,
+.app-shell[data-theme="boceto"] .space-card,
+.app-shell[data-theme="boceto"] .spaces-tip,
+.app-shell[data-theme="boceto"] .explorer-panel,
+.app-shell[data-theme="boceto"] .details-panel,
+.app-shell[data-theme="boceto"] .center-workspace,
+.app-shell[data-theme="boceto"] .study-node,
+.app-shell[data-theme="boceto"] .creator-modal,
+.app-shell[data-theme="boceto"] .onboarding-dialog {
+  border-style: dashed; border-width: 1.5px; border-radius: 11px 15px 10px 14px; box-shadow: 2px 3px 0 rgba(83,79,65,.09);
+}
+.app-shell[data-theme="boceto"] .spaces-hero { background: repeating-linear-gradient(0deg, rgba(130,117,91,.035) 0 1px, transparent 1px 26px), var(--theme-surface); }
+.app-shell[data-theme="boceto"] .flow-canvas { background-color: var(--theme-canvas); background-image: linear-gradient(rgba(126,139,119,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(126,139,119,.12) 1px, transparent 1px); background-size: 24px 24px; }
+.app-shell[data-theme="boceto"] .study-node { border: 1.5px solid color-mix(in srgb, var(--node-color) 60%, #817b69); border-radius: 9px 13px 8px 12px; box-shadow: 2px 3px 0 rgba(73,71,61,.12); }
+.app-shell[data-theme="boceto"] .study-node-root { border-width: 2px; border-radius: 12px 9px 13px 8px; background: #fffdf5; }
+.app-shell[data-theme="boceto"] .react-flow__edge-path { stroke-dasharray: 5 3; }
+.app-shell[data-theme="boceto"] .spaces-hero h1,
+.app-shell[data-theme="boceto"] .study-node .node-title,
+.app-shell[data-theme="boceto"] .study-node-root .node-title,
+.app-shell[data-theme="boceto"] .spaces-section-heading h2 { font-family: "Segoe Print", "Comic Sans MS", cursive; letter-spacing: -.25px; }
+.app-shell[data-theme="boceto"] .primary-button,
+.app-shell[data-theme="boceto"] .journey-button { border-radius: 7px 10px 8px 11px; box-shadow: 2px 2px 0 rgba(62,77,62,.17); }
+
+@media (max-width: 700px) {
+  .spaces-theme-options { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+  .spaces-theme-panel { align-items: stretch; flex-direction: column; gap: 10px; }
+  .spaces-theme-option { justify-content: flex-start; }
+  .theme-picker-popover { width: min(300px, calc(100vw - 26px)); right: -4px; }
+}
+
+
+/* Detalles adicionales para conservar legibilidad en lectura, audio y navegación. */
+.app-shell[data-theme] .brand-lockup,
+.app-shell[data-theme] .brand-name,
+.app-shell[data-theme] .header-topic h1,
+.app-shell[data-theme] .breadcrumb strong,
+.app-shell[data-theme] .spaces-footer strong,
+.app-shell[data-theme] .content-view-heading h2,
+.app-shell[data-theme] .detail-title-row h2,
+.app-shell[data-theme] .section-heading h3,
+.app-shell[data-theme] .empty-details h3,
+.app-shell[data-theme] .modal-heading-copy h2 { color: var(--theme-ink-strong); }
+.app-shell[data-theme] .content-view { background: var(--theme-canvas); color: var(--theme-ink); }
+.app-shell[data-theme] .content-view-heading p,
+.app-shell[data-theme] .detail-description,
+.app-shell[data-theme] .summary-item p,
+.app-shell[data-theme] .section-heading p,
+.app-shell[data-theme] .audio-title-wrap span,
+.app-shell[data-theme] .audio-live,
+.app-shell[data-theme] .audio-track-caption,
+.app-shell[data-theme] .speed-select-label,
+.app-shell[data-theme] .empty-details p,
+.app-shell[data-theme] .reading-intro-card > p,
+.app-shell[data-theme] .reading-concept-row small,
+.app-shell[data-theme] .source-library-content p,
+.app-shell[data-theme] .spaces-footer,
+.app-shell[data-theme] .spaces-hero-meta { color: var(--theme-muted); }
+.app-shell[data-theme] .audio-card,
+.app-shell[data-theme] .source-item,
+.app-shell[data-theme] .complete-button,
+.app-shell[data-theme] .reset-audio-button,
+.app-shell[data-theme] .empty-state-icon,
+.app-shell[data-theme] .mobile-bottom-nav,
+.app-shell[data-theme] .mobile-tool-button,
+.app-shell[data-theme] .mobile-canvas-zoom { background: var(--theme-surface); border-color: var(--theme-border); color: var(--theme-ink); }
+.app-shell[data-theme] .audio-icon,
+.app-shell[data-theme] .section-heading-icon,
+.app-shell[data-theme] .sources-heading-icon,
+.app-shell[data-theme] .reading-card-label,
+.app-shell[data-theme] .content-view-icon,
+.app-shell[data-theme] .source-library-index { background: var(--theme-accent-soft); border-color: var(--theme-border); color: var(--theme-accent); }
+.app-shell[data-theme] .audio-title-wrap strong,
+.app-shell[data-theme] .source-text,
+.app-shell[data-theme] .reading-intro-card h3,
+.app-shell[data-theme] .reading-branch-header h3,
+.app-shell[data-theme] .reading-concept-row strong,
+.app-shell[data-theme] .review-card h3,
+.app-shell[data-theme] .sources-summary-strip strong { color: var(--theme-ink-strong); }
+.app-shell[data-theme] .source-item:hover,
+.app-shell[data-theme] .reading-concept-row:hover { background: var(--theme-accent-soft); border-color: var(--theme-accent); }
+.app-shell[data-theme] .narrate-from-button,
+.app-shell[data-theme] .text-button,
+.app-shell[data-theme] .source-library-content a { color: var(--theme-accent); }
+.app-shell[data-theme] .details-panel-footer,
+.app-shell[data-theme] .sources-section,
+.app-shell[data-theme] .review-footer { background: var(--theme-surface); border-color: var(--theme-border); }
+.app-shell[data-theme] .branch-row { color: var(--theme-ink); }
+.app-shell[data-theme] .branch-row-copy strong { color: var(--theme-ink-strong); }
+.app-shell[data-theme] .branch-row-copy small,
+.app-shell[data-theme] .branch-index { color: var(--theme-muted); }
+.app-shell[data-theme] .spaces-tip-icon { color: var(--theme-accent); background: var(--theme-accent-soft); }
+.app-shell[data-theme] .space-card-progress-track { background: var(--theme-border); }
+.app-shell[data-theme] .space-card-progress-track > span { background: var(--theme-accent); }
+.app-shell[data-theme] .space-card-delete:hover { color: #fff; background: #a9505b; }
+.app-shell[data-theme] .mobile-bottom-nav-item { color: var(--theme-muted); }
+.app-shell[data-theme] .mobile-bottom-nav-item-active { color: var(--theme-accent); background: var(--theme-accent-soft); }
+.app-shell[data-theme] .mobile-canvas-toolbar { color: var(--theme-ink); }
+.app-shell[data-theme] .flow-canvas .react-flow__controls,
+.app-shell[data-theme] .flow-canvas .react-flow__minimap { box-shadow: 0 5px 18px rgba(0,0,0,.12); }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .flow-canvas .react-flow__minimap-mask { fill: rgba(5, 8, 15, .62) !important; }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .complete-button { background: var(--theme-accent-soft); color: var(--theme-accent); }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .complete-button.is-complete { color: var(--theme-on-accent); background: var(--theme-accent); border-color: var(--theme-accent); }
+.app-shell:is([data-theme="obsidiana"], [data-theme="grafito"], [data-theme="aurora"], [data-theme="medianoche"]) .auth-alert { color: var(--theme-ink); }

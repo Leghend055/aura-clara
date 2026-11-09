@@ -33,7 +33,7 @@ type Tab = 'Mapa' | 'Lectura' | 'Repasar' | 'Fuentes';
 
 type StudyWorkspace = { id: string; title: string; nodes: StudyNode[]; edges: StudyEdge[]; sourceDocument?: string; updatedAt: string };
 type AppView = 'spaces' | 'study';
-type ThemeName = 'crema' | 'lavanda' | 'menta' | 'cielo' | 'rosa';
+type ThemeName = 'crema' | 'lavanda' | 'menta' | 'cielo' | 'rosa' | 'obsidiana' | 'grafito' | 'aurora' | 'medianoche' | 'papel' | 'boceto';
 
 const themeOptions: { id: ThemeName; name: string; description: string; colors: string[] }[] = [
   { id: 'crema', name: 'Crema suave', description: 'Cálido y sereno', colors: ['#f7f5ef', '#ffffff', '#667eaa'] },
@@ -41,6 +41,12 @@ const themeOptions: { id: ThemeName; name: string; description: string; colors: 
   { id: 'menta', name: 'Menta', description: 'Fresco y natural', colors: ['#eff7f2', '#fbfffc', '#588e79'] },
   { id: 'cielo', name: 'Cielo', description: 'Ligero y luminoso', colors: ['#eef5fb', '#fbfdff', '#5d87b7'] },
   { id: 'rosa', name: 'Rosa empolvado', description: 'Suave y acogedor', colors: ['#fbf1f3', '#fffafb', '#b7748a'] },
+  { id: 'obsidiana', name: 'Obsidiana', description: 'Negro profundo con acentos violetas', colors: ['#0b0d13', '#191b27', '#a78bfa'] },
+  { id: 'grafito', name: 'Grafito', description: 'Carbón, acero y plata', colors: ['#17191d', '#292d34', '#b4bdc9'] },
+  { id: 'aurora', name: 'Aurora', description: 'Degradados violeta, azul y cian', colors: ['#17142f', '#26345a', '#72d9ed'] },
+  { id: 'medianoche', name: 'Medianoche', description: 'Azul nocturno y luz celeste', colors: ['#0d1729', '#1a2d49', '#75b8ff'] },
+  { id: 'papel', name: 'Papel', description: 'Marfil, tinta y tonos tierra', colors: ['#f3eddf', '#fffaf0', '#9a714b'] },
+  { id: 'boceto', name: 'Boceto', description: 'Cuaderno y trazos dibujados a mano', colors: ['#f4efdf', '#fffaf0', '#526653'] },
 ];
 const WORKSPACES_KEY = 'aura-clara-workspaces-v1';
 const LEGACY_STORAGE_KEY = 'aura-clara-study-map-v2';
@@ -196,8 +202,30 @@ function Dashboard() {
   }, [title, nodes, edges, sourceDocument, currentWorkspaceId]);
 
   useEffect(() => {
+    // Si la cuenta ya tiene una preferencia, úsala en cualquier dispositivo.
+    const savedAccountTheme = user?.user_metadata?.aura_clara_theme;
+    if (cloudEnabled && user && themeOptions.some((option) => option.id === savedAccountTheme)) {
+      setTheme(savedAccountTheme as ThemeName);
+    }
+  }, [cloudEnabled, user?.id]);
+
+  useEffect(() => {
     try { localStorage.setItem('aura-clara-theme', theme); } catch { /* La apariencia sigue disponible durante esta sesión. */ }
   }, [theme]);
+
+  const applyTheme = useCallback((nextTheme: ThemeName) => {
+    setTheme(nextTheme);
+    try { localStorage.setItem('aura-clara-theme', nextTheme); } catch { /* Se mantiene en memoria si el navegador bloquea el almacenamiento. */ }
+    // La metadata pertenece a la cuenta y permite conservar la misma apariencia
+    // al iniciar sesión desde el teléfono y desde la computadora.
+    if (cloudEnabled && user && supabase) {
+      void supabase.auth.updateUser({ data: { aura_clara_theme: nextTheme } }).then(({ error }) => {
+        if (error) setToast('El tema se aplicó en este dispositivo, pero no se pudo sincronizar con tu cuenta.');
+      }).catch(() => {
+        setToast('El tema se aplicó en este dispositivo, pero no se pudo sincronizar con tu cuenta.');
+      });
+    }
+  }, [cloudEnabled, user?.id]);
 
   useEffect(() => {
     if (!toast) return;
@@ -478,7 +506,7 @@ function Dashboard() {
           workspaces={workspaces}
           theme={theme}
           themeOptions={themeOptions}
-          onThemeChange={setTheme}
+          onThemeChange={applyTheme}
           onCreate={() => setCreatorOpen(true)}
           onOpen={openWorkspace}
           onDelete={deleteWorkspace}
@@ -528,7 +556,7 @@ function Dashboard() {
           <div className="header-actions">
             <div className="theme-picker-wrap">
               <button className={`quiet-button theme-trigger ${themePickerOpen ? 'theme-trigger-active' : ''}`} onClick={() => setThemePickerOpen((open) => !open)} aria-expanded={themePickerOpen}><Palette size={15} /> Temas</button>
-              {themePickerOpen && <div className="theme-picker-popover" role="dialog" aria-label="Temas de apariencia"><div className="theme-picker-heading"><strong>Un espacio a tu gusto</strong><span>Elige una paleta visual</span></div>{themeOptions.map((option) => <button className={`theme-choice ${theme === option.id ? 'theme-choice-active' : ''}`} key={option.id} onClick={() => { setTheme(option.id); setThemePickerOpen(false); }}><span className="theme-swatches">{option.colors.map((color) => <i key={color} style={{ backgroundColor: color }} />)}</span><span className="theme-choice-copy"><strong>{option.name}</strong><small>{option.description}</small></span><span className="theme-choice-check">{theme === option.id ? '✓' : ''}</span></button>)}<p className="theme-picker-footnote">La preferencia se guarda en este navegador.</p></div>}
+              {themePickerOpen && <div className="theme-picker-popover" role="dialog" aria-label="Temas de apariencia"><div className="theme-picker-heading"><strong>Un espacio a tu gusto</strong><span>Elige una paleta visual</span></div>{themeOptions.map((option) => <button className={`theme-choice ${theme === option.id ? 'theme-choice-active' : ''}`} key={option.id} onClick={() => { applyTheme(option.id); setThemePickerOpen(false); }}><span className="theme-swatches">{option.colors.map((color) => <i key={color} style={{ backgroundColor: color }} />)}</span><span className="theme-choice-copy"><strong>{option.name}</strong><small>{option.description}</small></span><span className="theme-choice-check">{theme === option.id ? '✓' : ''}</span></button>)}<p className="theme-picker-footnote">{cloudEnabled ? "La preferencia se sincroniza con tu cuenta." : "La preferencia se guarda en este navegador."}</p></div>}
             </div>
             <button className="quiet-button" onClick={exportMap} disabled={!nodes.length}><Download size={15} /> Exportar JSON</button>
             <button className="primary-button header-create-button" onClick={() => { setThemePickerOpen(false); setCreatorOpen(true); }}><Plus size={17} /> Crear mapa</button>
@@ -605,9 +633,9 @@ function Dashboard() {
                   proOptions={{ hideAttribution: true }}
                   defaultEdgeOptions={{ type: 'default' }}
                 >
-                  <Background variant={BackgroundVariant.Dots} gap={23} size={1.1} color="#d8d9d2" />
+                  <Background variant={BackgroundVariant.Dots} gap={23} size={1.1} color="var(--theme-dots, #d8d9d2)" />
                   <Controls showInteractive={false} position="bottom-left" />
-                  <MiniMap position="bottom-right" pannable zoomable nodeColor={(node) => (node.data as StudyNodeData).color ?? '#a4b0c6'} maskColor="rgba(250,249,245,0.68)" />
+                  <MiniMap position="bottom-right" pannable zoomable nodeColor={(node) => (node.data as StudyNodeData).color ?? '#a4b0c6'} maskColor="var(--theme-minimap-mask, rgba(250,249,245,0.68))" />
                   <Panel position="top-right" className="flow-legend-panel">
                     <div className="legend-heading">LEYENDA</div>
                     {categories.map((category) => <span className="legend-row" key={category.name}><span style={{ backgroundColor: category.color }} />{category.name}</span>)}
