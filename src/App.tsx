@@ -472,7 +472,7 @@ function Dashboard() {
   if (cloudEnabled && !cloudReady) return <div className="cloud-loading-screen"><div className="auth-spinner-wrap"><LoaderCircle className="auth-spinner" size={26}/></div><h2>Sincronizando tus espacios</h2><p>Estamos cargando tus mapas privados.</p></div>;
 
   return (
-    <div className={`app-shell ${currentView === 'study' && tab === 'Mapa' ? 'app-shell-map-view' : ''}`} data-theme={theme}>
+    <div className={`app-shell ${currentView === 'study' ? 'app-shell-study-view' : ''} ${currentView === 'study' && tab === 'Mapa' ? 'app-shell-map-view' : ''}`} data-theme={theme}>
       {currentView === 'spaces' ? (
         <SpacesDashboard
           workspaces={workspaces}
@@ -669,6 +669,31 @@ function Dashboard() {
           onClose={() => setMobilePanel('none')}
         />
       </main>
+
+      <nav className="mobile-bottom-nav" aria-label="Navegación del espacio de estudio">
+        <button type="button" className="mobile-bottom-nav-item" onClick={returnToSpaces} aria-label="Volver a Mis Espacios">
+          <LayoutGrid size={19} strokeWidth={1.9} />
+          <span>Espacios</span>
+        </button>
+        {([
+          { name: 'Mapa', icon: Network, label: 'Mapa' },
+          { name: 'Lectura', icon: BookOpen, label: 'Leer' },
+          { name: 'Repasar', icon: CircleHelp, label: 'Repasar' },
+          { name: 'Fuentes', icon: BookMarked, label: 'Fuentes' },
+        ] as const).map(({ name, icon: Icon, label }) => (
+          <button
+            type="button"
+            key={name}
+            className={`mobile-bottom-nav-item ${tab === name ? 'mobile-bottom-nav-item-active' : ''}`}
+            onClick={() => chooseTab(name)}
+            aria-current={tab === name ? 'page' : undefined}
+            aria-label={name}
+          >
+            <Icon size={19} strokeWidth={1.9} />
+            <span>{label}</span>
+          </button>
+        ))}
+      </nav>
 
       <footer className="app-footer"><div><span className="footer-brand-mark"><BrainCircuit size={14} /></span> <strong>Aura Clara</strong><span>· Un espacio para aprender conectando ideas.</span></div><div className="footer-credit"><span>Hecho para estudiar mejor</span><span className="footer-heart">✳</span><span>Edición personal</span><span className="watermark-credit" aria-label="Diseñado por Cesar Gabriel">Cesar Gabriel :)</span></div></footer>
       </>
