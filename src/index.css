@@ -742,3 +742,264 @@ a { color: inherit; }
 @media (max-width: 740px) { .ai-exam-button { margin-left: 0; width: 100%; justify-content: center; } }
 .ai-consent-row { display: flex; align-items: flex-start; gap: 9px; margin-top: 9px; padding: 11px 12px; border: 1px solid #e6e1f0; border-radius: 10px; color: #716985; background: #f8f5fc; font-size: 10px; line-height: 1.6; cursor: pointer; }
 .ai-consent-row input { flex: 0 0 auto; margin-top: 2px; accent-color: #8871b2; }
+
+/* Aura Clara: experiencia de mapa optimizada para teléfonos */
+.mobile-panel-backdrop,
+.mobile-canvas-toolbar,
+.mobile-sheet-close,
+.mobile-detail-sheet-header { display: none; }
+
+@media (max-width: 760px) {
+  /* Solo se activa en la vista Mapa; escritorio y las demás pestañas conservan su distribución. */
+  .app-shell.app-shell-map-view {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0 8px max(5px, env(safe-area-inset-bottom));
+    overflow: hidden;
+  }
+
+  .app-shell-map-view .app-header {
+    position: relative;
+    z-index: 2;
+    flex: 0 0 auto;
+    margin: 0 -8px;
+    padding: 0 8px;
+  }
+  .app-shell-map-view .header-main-row {
+    position: relative;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    min-height: 0;
+    padding: 8px 0 6px;
+  }
+  .app-shell-map-view .brand-lockup {
+    top: 8px;
+    left: 7px;
+  }
+  .app-shell-map-view .brand-mark { width: 32px; height: 32px; border-radius: 10px; }
+  .app-shell-map-view .brand-name { font-size: 16px; }
+  .app-shell-map-view .brand-name small { font-size: 6px; letter-spacing: 1.2px; }
+  .app-shell-map-view .header-topic {
+    min-height: 32px;
+    padding: 0 0 0 116px;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .app-shell-map-view .header-topic-eyebrow { justify-content: flex-start; font-size: 6px; letter-spacing: .9px; }
+  .app-shell-map-view .header-topic h1 { margin-top: 3px; font-size: 12px; line-height: 1.25; text-align: left; }
+  .app-shell-map-view .header-topic p { display: none; }
+  .app-shell-map-view .header-right-tools { grid-row: auto; padding: 6px 0 0; gap: 6px; }
+  .app-shell-map-view .global-search-wrap { width: 100%; max-width: none; min-width: 0; height: 32px; }
+  .app-shell-map-view .global-search-wrap kbd { display: none; }
+  .app-shell-map-view .header-zoom-group { display: none; }
+  .app-shell-map-view .header-lower-row { min-height: 39px; gap: 5px; }
+  .app-shell-map-view .main-nav { flex: 1; justify-content: space-between; gap: 0; min-width: 0; }
+  .app-shell-map-view .nav-tab { min-height: 39px; padding: 0 6px; gap: 4px; font-size: 9px; }
+  .app-shell-map-view .nav-tab svg { width: 13px; height: 13px; }
+  .app-shell-map-view .header-actions { gap: 0; }
+  .app-shell-map-view .theme-picker-wrap,
+  .app-shell-map-view .header-actions > .quiet-button { display: none; }
+  .app-shell-map-view .header-create-button { padding: 7px 8px; gap: 4px; font-size: 8px; }
+  .app-shell-map-view .header-create-button svg { width: 13px; height: 13px; }
+
+  .app-shell-map-view .workspace-heading-row {
+    flex: 0 0 29px;
+    height: 29px;
+    min-height: 29px;
+    justify-content: flex-start;
+    padding: 0 2px;
+  }
+  .app-shell-map-view .breadcrumb { max-width: 100%; font-size: 8px; gap: 5px; }
+  .app-shell-map-view .breadcrumb strong { max-width: 58vw; font-size: 8px; }
+  .app-shell-map-view .workspace-status { display: none; }
+
+  .app-shell-map-view .workspace-grid {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+  .app-shell-map-view .center-workspace {
+    order: 0;
+    display: flex;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    border-radius: 13px;
+    overflow: hidden;
+  }
+  .app-shell-map-view .map-panel { height: 100%; min-height: 0; }
+  .app-shell-map-view .canvas-topbar { min-height: 49px; padding: 7px 10px; gap: 8px; }
+  .app-shell-map-view .canvas-eyebrow { font-size: 7px; letter-spacing: 1.1px; }
+  .app-shell-map-view .canvas-topbar h2 { margin-top: 3px; font-size: 12px; }
+  .app-shell-map-view .canvas-hint { display: none; }
+  .app-shell-map-view .canvas-fit-button { min-height: 34px; padding: 6px 8px; font-size: 8px; }
+  .app-shell-map-view .flow-canvas {
+    position: relative;
+    flex: 1 1 auto;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    background-size: 19px 19px;
+    touch-action: none;
+  }
+  .app-shell-map-view .flow-canvas .react-flow { width: 100%; height: 100%; touch-action: none; }
+  .app-shell-map-view .flow-canvas .react-flow__pane { touch-action: none; }
+  .app-shell-map-view .flow-canvas .react-flow__controls,
+  .app-shell-map-view .flow-canvas .react-flow__minimap,
+  .app-shell-map-view .flow-legend-panel,
+  .app-shell-map-view .canvas-helper-pill { display: none !important; }
+  .app-shell-map-view .canvas-bottom-meta { display: none; }
+  .app-shell-map-view .empty-map-state { min-height: 0; padding: 20px 15px; }
+  .app-shell-map-view .empty-map-art { width: 105px; height: 105px; transform: scale(.85); margin-bottom: 8px; }
+  .app-shell-map-view .empty-map-state h2 { font-size: 19px; }
+  .app-shell-map-view .empty-map-state > p { font-size: 11px; }
+  .app-shell-map-view .empty-map-perks { display: none; }
+
+  .app-shell-map-view .explorer-panel,
+  .app-shell-map-view .details-panel {
+    position: fixed;
+    z-index: 51;
+    right: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    left: 10px;
+    width: auto;
+    max-width: 620px;
+    max-height: min(76dvh, 650px);
+    min-height: 0;
+    margin: 0 auto;
+    border: 1px solid var(--theme-border, #e8e8e1);
+    border-radius: 19px;
+    background: var(--theme-surface, #fff);
+    box-shadow: 0 18px 65px rgba(25, 35, 52, .24);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(calc(100% + 30px));
+    transition: transform .22s ease, opacity .18s ease, visibility .18s ease;
+  }
+  .app-shell-map-view .explorer-panel {
+    order: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 15px 14px 12px;
+    overflow-y: auto;
+  }
+  .app-shell-map-view .details-panel {
+    order: 2;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+  }
+  .app-shell-map-view .workspace-grid.mobile-panel-explorer-open .explorer-panel,
+  .app-shell-map-view .workspace-grid.mobile-panel-details-open .details-panel {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+  .app-shell-map-view .mobile-panel-backdrop {
+    display: block;
+    position: fixed;
+    z-index: 50;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: rgba(31, 40, 56, .34);
+    backdrop-filter: blur(2px);
+  }
+  .app-shell-map-view .panel-section-title { padding-bottom: 11px; }
+  .app-shell-map-view .mobile-sheet-close { display: inline-grid; margin-left: 3px; }
+  .app-shell-map-view .stats-grid { padding: 10px 0; }
+  .app-shell-map-view .journey-card { margin-bottom: 11px; padding: 10px; }
+  .app-shell-map-view .journey-card p { font-size: 9px; }
+  .app-shell-map-view .branch-list { flex: 0 1 auto; max-height: 25dvh; min-height: 50px; }
+  .app-shell-map-view .explorer-bottom-card { display: none; }
+  .app-shell-map-view .mobile-detail-sheet-header {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 47px;
+    padding: 5px 13px 5px 17px;
+    border-bottom: 1px solid var(--theme-border, #e8e8e1);
+    color: var(--theme-muted, #8991a0);
+    background: var(--theme-canvas, #fbfaf6);
+    font-size: 8px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+  }
+  .app-shell-map-view .details-panel-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 15px 16px 12px; }
+  .app-shell-map-view .details-panel-footer { flex: 0 0 auto; padding: 10px 13px max(10px, env(safe-area-inset-bottom)); }
+
+  .app-shell-map-view .mobile-canvas-toolbar {
+    position: absolute;
+    z-index: 8;
+    right: 9px;
+    bottom: 9px;
+    left: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    min-height: 51px;
+    padding: 6px;
+    border: 1px solid rgba(226, 228, 224, .95);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .94);
+    box-shadow: 0 5px 17px rgba(42, 52, 68, .12);
+    backdrop-filter: blur(12px);
+  }
+  .app-shell-map-view .mobile-tool-button,
+  .app-shell-map-view .mobile-canvas-zoom button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    min-width: 40px;
+    min-height: 38px;
+    padding: 0 8px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    color: var(--theme-ink, #52617a);
+    background: transparent;
+    font-size: 9px;
+    font-weight: 750;
+    touch-action: manipulation;
+  }
+  .app-shell-map-view .mobile-tool-button:active,
+  .app-shell-map-view .mobile-canvas-zoom button:active { background: var(--theme-accent-soft, #eaf0fa); }
+  .app-shell-map-view .mobile-tool-button svg,
+  .app-shell-map-view .mobile-canvas-zoom svg { flex: 0 0 auto; color: var(--theme-accent, #526b9e); }
+  .app-shell-map-view .mobile-canvas-zoom { display: flex; align-items: center; gap: 1px; padding: 2px; border: 1px solid var(--theme-border, #e8e8e1); border-radius: 10px; background: var(--theme-canvas, #fbfaf6); }
+  .app-shell-map-view .mobile-canvas-zoom button { min-width: 36px; min-height: 34px; padding: 0 6px; }
+  .app-shell-map-view .app-footer { display: none; }
+}
+
+@media (max-width: 380px) {
+  .app-shell.app-shell-map-view { padding-right: 5px; padding-left: 5px; }
+  .app-shell-map-view .app-header { margin-right: -5px; margin-left: -5px; padding-right: 5px; padding-left: 5px; }
+  .app-shell-map-view .header-topic { padding-left: 108px; }
+  .app-shell-map-view .header-topic h1 { font-size: 11px; }
+  .app-shell-map-view .nav-tab { padding-right: 4px; padding-left: 4px; font-size: 8px; }
+  .app-shell-map-view .nav-tab svg { width: 12px; height: 12px; }
+  .app-shell-map-view .header-create-button { padding: 6px; }
+  .app-shell-map-view .mobile-tool-button { gap: 3px; padding: 0 5px; font-size: 8px; }
+  .app-shell-map-view .mobile-canvas-zoom button { min-width: 32px; }
+}

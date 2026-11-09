@@ -100,6 +100,7 @@ function Dashboard() {
   const [edges, setEdges, onEdgesChange] = useEdgesState<StudyEdge>([]);
   const [sourceDocument, setSourceDocument] = useState('');
   const [selectedNodeId, setSelectedNodeId] = useState('');
+  const [mobilePanel, setMobilePanel] = useState<'none' | 'explorer' | 'details'>('none');
   const [tab, setTab] = useState<Tab>('Mapa');
   const [search, setSearch] = useState('');
   const [creatorOpen, setCreatorOpen] = useState(false);
@@ -211,11 +212,13 @@ function Dashboard() {
   const centerOnNode = useCallback((node: StudyNode) => {
     setSelectedNodeId(node.id);
     setTab('Mapa');
+    setMobilePanel('none');
     setCenter(node.position.x + (node.data.kind === 'root' ? 120 : 90), node.position.y + 38, { zoom: node.data.kind === 'root' ? 0.72 : 0.95, duration: 450 });
   }, [setCenter]);
 
   const onNodeClick: NodeMouseHandler<StudyNode> = useCallback((_event, node) => {
     setSelectedNodeId(node.id);
+    setMobilePanel('details');
   }, []);
 
   const handleSearch = useCallback((value = search) => {
@@ -225,6 +228,7 @@ function Dashboard() {
     if (match) {
       setSelectedNodeId(match.id);
       setTab('Mapa');
+      setMobilePanel('details');
       setCenter(match.position.x + 80, match.position.y + 35, { zoom: 0.9, duration: 500 });
     } else {
       setToast('No se encontraron conceptos con ese término.');
@@ -304,6 +308,7 @@ function Dashboard() {
     const freshWorkspace: StudyWorkspace = { id: workspaceId, title: newTitle, nodes: generated.nodes, edges: generated.edges, sourceDocument: content, updatedAt: new Date().toISOString() };
     setWorkspaces((current) => [...current, freshWorkspace]);
     setCurrentWorkspaceId(workspaceId);
+    setMobilePanel('none');
     setCurrentView('study');
     setTitle(newTitle);
     setTitleDraft(newTitle);
@@ -336,6 +341,7 @@ function Dashboard() {
     setNodes(mapFile.nodes);
     setEdges(mapFile.edges);
     setSelectedNodeId(mapFile.nodes.find((node) => node.data.kind === 'root')?.id ?? mapFile.nodes[0].id);
+    setMobilePanel('none');
     setTab('Mapa');
     setReviewIndex(0);
     setReviewChoice(null);
@@ -347,6 +353,7 @@ function Dashboard() {
 
   const openWorkspace = useCallback((workspace: StudyWorkspace) => {
     setCurrentWorkspaceId(workspace.id);
+    setMobilePanel('none');
     setTitle(workspace.title);
     setTitleDraft(workspace.title);
     setEditingTitle(false);
@@ -363,6 +370,7 @@ function Dashboard() {
   const returnToSpaces = useCallback(() => {
     if ('speechSynthesis' in window) window.speechSynthesis.cancel();
     setIsSpeaking(false); setIsPaused(false);
+    setMobilePanel('none');
     setCurrentView('spaces');
     setThemePickerOpen(false);
   }, []);
@@ -436,6 +444,7 @@ function Dashboard() {
 
   const chooseTab = (nextTab: Tab) => {
     setThemePickerOpen(false);
+    setMobilePanel('none');
     setTab(nextTab);
     if (nextTab === 'Mapa') setTimeout(() => fitView({ padding: 0.15, duration: 350 }), 50);
   };
@@ -463,7 +472,7 @@ function Dashboard() {
   if (cloudEnabled && !cloudReady) return <div className="cloud-loading-screen"><div className="auth-spinner-wrap"><LoaderCircle className="auth-spinner" size={26}/></div><h2>Sincronizando tus espacios</h2><p>Estamos cargando tus mapas privados.</p></div>;
 
   return (
-    <div className="app-shell" data-theme={theme}>
+    <div className={`app-shell ${currentView === 'study' && tab === 'Mapa' ? 'app-shell-map-view' : ''}`} data-theme={theme}>
       {currentView === 'spaces' ? (
         <SpacesDashboard
           workspaces={workspaces}
@@ -532,9 +541,10 @@ function Dashboard() {
         <div className="workspace-status"><span className="saved-dot" /> {nodes.length ? (cloudEnabled ? 'Sincronización en la nube activa' : 'Guardado localmente') : 'Espacio vacío'} <span className="status-divider" /> <span>{completionPercentage}% completado</span></div>
       </div>
 
-      <main className="workspace-grid">
+      <main className={`workspace-grid ${mobilePanel !== 'none' ? `mobile-panel-${mobilePanel}-open` : ''}`}>
+        {mobilePanel !== 'none' && <button className="mobile-panel-backdrop" type="button" onClick={() => setMobilePanel('none')} aria-label="Cerrar panel" />}
         <aside className="explorer-panel">
-          <div className="panel-section-title"><div className="panel-title-icon"><ListTree size={17} /></div><div><h2>Tu recorrido</h2><p>Explorador de conceptos</p></div><button className="icon-button panel-settings" title="Opciones del recorrido" onClick={() => setToast('Consejo: selecciona una rama para explorar sus conceptos.')}><Settings2 size={16} /></button></div>
+          <div className="panel-section-title"><div className="panel-title-icon"><ListTree size={17} /></div><div><h2>Tu recorrido</h2><p>Explorador de conceptos</p></div><button className="icon-button panel-settings" title="Opciones del recorrido" onClick={() => setToast('Consejo: selecciona una rama para explorar sus conceptos.')}><Settings2 size={16} /></button><button className="icon-button mobile-sheet-close" type="button" title="Cerrar explorador" aria-label="Cerrar explorador" onClick={() => setMobilePanel('none')}><X size={17} /></button></div>
           <div className="stats-grid">
             <div className="stat-tile"><span className="stat-icon stat-icon-blue"><Layers3 size={16} /></span><strong>{concepts.length}</strong><span>Conceptos</span></div>
             <div className="stat-tile"><span className="stat-icon stat-icon-peach"><Network size={16} /></span><strong>{branches.length}</strong><span>Ramas</span></div>
@@ -589,6 +599,8 @@ function Dashboard() {
                   maxZoom={1.55}
                   nodesDraggable
                   nodesConnectable={false}
+                  panOnDrag
+                  zoomOnPinch
                   elementsSelectable
                   proOptions={{ hideAttribution: true }}
                   defaultEdgeOptions={{ type: 'default' }}
@@ -602,6 +614,15 @@ function Dashboard() {
                   </Panel>
                   <Panel position="bottom-center" className="canvas-helper-pill"><ArrowDownRight size={13} /> Arrastra para explorar · rueda para zoom</Panel>
                 </ReactFlow>
+                <div className="mobile-canvas-toolbar" aria-label="Controles del mapa">
+                  <button type="button" className="mobile-tool-button mobile-panel-trigger" onClick={() => setMobilePanel('explorer')}><ListTree size={17} /><span>Temas</span></button>
+                  <div className="mobile-canvas-zoom" aria-label="Zoom del mapa">
+                    <button type="button" aria-label="Alejar mapa" title="Alejar" onClick={() => void zoomOut({ duration: 140 })}><ZoomOut size={17} /></button>
+                    <button type="button" aria-label="Acercar mapa" title="Acercar" onClick={() => void zoomIn({ duration: 140 })}><ZoomIn size={17} /></button>
+                    <button type="button" aria-label="Centrar mapa" title="Centrar" onClick={() => void fitView({ padding: 0.16, duration: 350 })}><Maximize2 size={16} /></button>
+                  </div>
+                  <button type="button" className="mobile-tool-button mobile-panel-trigger" onClick={() => setMobilePanel('details')} disabled={!selectedNode}><Info size={17} /><span>Detalle</span></button>
+                </div>
               </div>
               <div className="canvas-bottom-meta"><span><span className="meta-bullet" />{nodes.length} nodos</span><span><span className="meta-bullet meta-bullet-line" />{edges.length} conexiones</span><span className="canvas-bottom-note">El mapa es editable: mueve los nodos para reorganizarlo.</span></div>
               </>}
@@ -619,7 +640,7 @@ function Dashboard() {
               onChoose={(id) => { if (!reviewChecked) { setReviewChoice(id); setReviewChecked(true); if (id === concepts[reviewIndex]?.id) setReviewScore((score) => score + 1); } }}
               onNext={() => { setReviewIndex((index) => (index + 1) % Math.max(concepts.length, 1)); setReviewChoice(null); setReviewChecked(false); }}
               onRetry={retryReview}
-              onSelectNode={(node) => { setSelectedNodeId(node.id); setTab('Mapa'); }}
+              onSelectNode={(node) => { setSelectedNodeId(node.id); setTab('Mapa'); setMobilePanel('details'); }}
               aiExam={aiExam}
               aiExamIndex={aiExamIndex}
               aiExamChoice={aiExamChoice}
@@ -645,6 +666,7 @@ function Dashboard() {
           onNarrate={narrate}
           onPauseToggle={togglePause}
           onToggleComplete={toggleComplete}
+          onClose={() => setMobilePanel('none')}
         />
       </main>
 

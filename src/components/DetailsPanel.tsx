@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AudioLines, CheckCircle2, Circle, ExternalLink, Headphones, Pause, Play, RotateCcw, Volume2 } from 'lucide-react';
+import { AudioLines, CheckCircle2, Circle, ExternalLink, Headphones, Pause, Play, RotateCcw, Volume2, X } from 'lucide-react';
 import type { StudyNodeData } from '../types';
 
 type DetailsPanelProps = {
@@ -11,6 +11,7 @@ type DetailsPanelProps = {
   onNarrate: (fromCurrent: boolean) => void;
   onPauseToggle: () => void;
   onToggleComplete: () => void;
+  onClose: () => void;
 };
 
 function sourceHref(source: string): string {
@@ -19,12 +20,15 @@ function sourceHref(source: string): string {
   return `https://scholar.google.com/scholar?q=${encodeURIComponent(source)}`;
 }
 
-export default function DetailsPanel({ node, isSpeaking, isPaused, speed, onSpeedChange, onNarrate, onPauseToggle, onToggleComplete }: DetailsPanelProps) {
+export default function DetailsPanel({ node, isSpeaking, isPaused, speed, onSpeedChange, onNarrate, onPauseToggle, onToggleComplete, onClose }: DetailsPanelProps) {
   const [expandedSources, setExpandedSources] = useState(false);
   useEffect(() => setExpandedSources(false), [node?.title]);
 
   if (!node) {
-    return <aside className="details-panel empty-details"><div className="empty-state-icon"><AudioLines size={24} /></div><h3>Selecciona un concepto</h3><p>Sus explicaciones, resumen y fuentes aparecerán en este panel.</p></aside>;
+    return <aside className="details-panel empty-details">
+      <div className="mobile-detail-sheet-header"><span>DETALLE DEL CONCEPTO</span><button className="icon-button" type="button" onClick={onClose} aria-label="Cerrar detalles"><X size={17} /></button></div>
+      <div className="empty-state-icon"><AudioLines size={24} /></div><h3>Selecciona un concepto</h3><p>Sus explicaciones, resumen y fuentes aparecerán en este panel.</p>
+    </aside>;
   }
 
   const allSources = node.sources ?? [];
@@ -32,6 +36,7 @@ export default function DetailsPanel({ node, isSpeaking, isPaused, speed, onSpee
 
   return (
     <aside className="details-panel">
+      <div className="mobile-detail-sheet-header"><span>DETALLE DEL CONCEPTO</span><button className="icon-button" type="button" onClick={onClose} aria-label="Cerrar detalles"><X size={17} /></button></div>
       <div className="details-panel-scroll">
         <div className="details-label-row"><span className="eyebrow">DETALLE DEL CONCEPTO</span><span className="category-pill" style={{ color: node.color, backgroundColor: `${node.color}17` }}><span className="category-dot" style={{ backgroundColor: node.color }} />{node.category}</span></div>
         <div className="detail-title-row">
